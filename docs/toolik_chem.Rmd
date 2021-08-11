@@ -1,0 +1,49 @@
+---
+title: "Alaska Biogeochemistry"
+author: "Scout Leonard"
+date: "8/11/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(here)
+library(janitor)
+
+toolik_biochem <- read.csv(here::here("data", "dataviewer.csv"), na = ".") %>% 
+  clean_names()
+```
+
+
+# Finding the means of a subset of the data!
+```{r}
+inlet_biochem <- toolik_biochem %>% 
+  filter(site == "Toolik Inlet") %>% 
+  select(p_h, doc_u_m, tdn_u_m)
+```
+
+## loop by hand
+```{r}
+mean_inlet_biochem <- vector(mode = "numeric", length = ncol(inlet_biochem))
+
+for(i in 1:ncol(inlet_biochem)) {
+  mean_val <- mean(inlet_biochem[[i]], na.rm = TRUE)
+  mean_inlet_biochem[i] <- mean_val
+}
+
+mean_inlet_biochem
+```
+
+## use the apply function
+```{r}
+apply(X = inlet_biochem, 2, mean, na.rm = TRUE)
+```
+
+## use the purrr::map_df() function 
+
+```{r}
+map_df(.x = inlet_biochem, .f = mean, na.rm = TRUE)
+```
+
